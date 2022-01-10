@@ -87,26 +87,16 @@ const getRandomArrItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const getRandomName = () =>
   `${getRandomArrItem(names)} ${getRandomArrItem(names)}`;
 
-// Function to generate random assignments that we can add to student object.
-const getRandomEmail = (int) => {
-  const results = [];
-  for (let i = 0; i < int; i++) {
-    results.push({
-      assignmentName: getRandomArrItem(appDescriptions),
-    });
-  }
-  return results;
-};
 
 
 const createUser = () =>
 {
   let firstName = getRandomArrItem(names)
   let lastName = getRandomArrItem(names)
-  let name = ` ${firstName} ${lastName}`;
+  let name = `${firstName} ${lastName}`;
   let email = `${firstName}.${lastName}${getRandomArrItem(suffix)}`;
   user = {username: name, email: email}
   return user
 }
 // Export the functions for use in seed.js
-module.exports = { getRandomName, getRandomEmail, createUser };
+module.exports = { getRandomName, createUser };
