@@ -65,19 +65,33 @@ module.exports = {
 
   // Delete a thought
   deleteThought(req, res) {
+    console.log('init delete thought')
     Thought.findOneAndDelete({ _id: req.params.thoughtId })
       .then((thought) =>
         !thought
-          ? res.status(404).json({ message: 'No thought with that ID found' })
-          : User.deleteMany({ _id: { $in: thought.username } })
+            ? res.status(404).json({ message: 'No thought with that id exists' })
+            : User.findOneAndUpdate(
+                { thoughts: req.params.thoughtId },
+                { $pull: { thoughts: req.params.thoughtId } },
+                { new: true }
+            )
       )
-      .then(() => res.json({ message: 'Thought and user deleted!' }))
-      .catch((err) => res.status(500).json(err));
+      .then((user) =>
+        !user
+          ? user.status(404).json({
+              message: 'Thought deleted, but no user found',
+            })
+          : res.json({ message: 'Thought successfully deleted' })
+      )      
+      .catch((err) => {
+          console.log(err);
+          res.status(500).json(err);
+      });
   },
 
   
   //Create reaction in thought
-  createThoughtReaction(req, res) {
+  createReaction(req, res) {
     Thought.findOneAndUpdate(
       { thoughtId: req.params.thoughtId },
       { $addToSet: {reactions: req.body} },
@@ -90,7 +104,9 @@ module.exports = {
       });
   },
 
-  deleteThoughtReaction(req, res) {
+
+  //Delete reaction
+  deleteReaction(req, res) {
     Thought.findOneAndUpdate(
       { thoughtId: req.params.thoughtId },
       { $pull: {reactions: {reactionId: req.params.reactionId}} },
